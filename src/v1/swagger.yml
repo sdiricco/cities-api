@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Cities API
+  description: The official cities **REST** api
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+ /api/v1/cities:
+   get:
+     tags:
+       - Cities
+     parameters:
+       - in: query
+         name: city
+         schema:
+           type: string
+         description: Any value of substring-city
+       - in: query
+         name: limit
+         schema:
+           type: integer
+           minimum: 1
+           default: 10
+         description: The paginations's limit
+       - in: query
+         name: page
+         schema:
+           type: integer
+           minimum: 1
+           default: 1
+         description: The paginations's page
+     responses:
+       200:
+         description: OK
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 status:
+                   type: string
+                   example: OK
+                 data:
+                   type: array 
+                   items: 
+                     $ref: "#/components/schemas/City"
+                 paging:
+                   type: object 
+                   properties: 
+                     total: 
+                       type: integer
+                       example: 10
+                     page: 
+                       type: integer
+                       example: 1
+                     pages: 
+                       type: integer
+                       example: 5
+       5XX:
+         description: FAILED
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 status: 
+                   type: string
+                   example: FAILED
+                 data:
+                   type: object
+                   properties:
+                     error:
+                       type: string 
+                       example: "Some error message"
+
+components:
+  schemas:
+     City:
+       type: object
+       properties:
+         countryCode:
+           type: string
+           example: IT
+         postalCode:
+           type: string
+           example: "67010"
+         city:
+           type: string
+           example: Barete
+         region:
+           type: string
+           example: Abruzzo
+         regionCode:
+           type: string
+           example: "01"
+         province:
+           type: string
+           example: L'Aquila
+         provinceCode:
+           type: string
+           example: AQ
+         latitude:
+           type: string
+           example: "42.4501"
+         longitude:
+           type: string
+           example: "13.2806"
