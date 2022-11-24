@@ -5,62 +5,63 @@ const { MongoClient } = require("mongodb");
 const uri =
   "mongodb+srv://sdiricco:8vYaVvlDn2WjOl8K@cluster0.7ooa4te.mongodb.net/?retryWrites=true&w=majority";
 
+const DB = "cities";
+const COLLECTION = "IT";
+
 const client = new MongoClient(uri);
 
-async function createDB(){
-  for (let i = 0; i<IT.length; i++) {
-    await client
-      .db('cities')
-      .collection('IT')
-      .insertOne(IT[i])
+async function createDB() {
+  for (let i = 0; i < IT.length; i++) {
+    await client.db(DB).collection(COLLECTION).insertOne(IT[i]);
     console.clear();
-    console.log(`Inserted: ${IT[i].city}`)
-    console.log(`Region: ${IT[i].region}`)
-    console.log(`Completed: ${i}/${IT.length}`)
+    console.log(`Inserted: ${IT[i].city}`);
+    console.log(`Region: ${IT[i].region}`);
+    console.log(`Completed: ${i}/${IT.length}`);
   }
 }
 
-client.connect().then(async ()=> {
-  console.log('DB connected.')
+client.connect().then(async () => {
+  console.log("DB connected.");
 });
 
-const getCities = async (filterParams) => {
-  const limit = filterParams.limit ? parseInt(filterParams.limit) : 10;
-  const page = filterParams.page ? parseInt(filterParams.page) : 1;
-  const city = filterParams.city ? filterParams.city : "" 
-  const regex = `^${city}`
+const getCities = async (queryParams) => {
+  const limit = queryParams.limit ? parseInt(queryParams.limit) : 10;
+  const page = queryParams.page ? parseInt(queryParams.page) : 1;
+  const city = queryParams.city ? queryParams.city : "";
+  const sort = queryParams.sort ?  parseInt(queryParams.sort) : 1;
+
   try {
-    const skipIndex = (page - 1) * limit
+    const regex = `^${city}`;
+    const query = { city: { $regex: regex, $options: "i" } }
+    const skipIndex = (page - 1) * limit;
     const cities = await client
-      .db('cities')
-      .collection('IT')
-      .find({ "city": { $regex: regex, $options: "i" } })
+      .db(DB)
+      .collection(COLLECTION)
+      .find(query)
+      .sort({ city: sort})
       .skip(skipIndex)
       .limit(limit)
       .toArray();
-    
+
     const total = await client
-      .db('cities')
-      .collection('IT')
-      .countDocuments()
+      .db(DB)
+      .collection(COLLECTION)
+      .countDocuments(query);
 
-    const pages = Math.ceil(total/limit)
+    const pages =  Math.ceil(total / limit);
 
-  return {
-    cities, 
-    paging: {
-      total,
-      page,
-      pages
-    }
-  }
+    return {
+      cities,
+      paging: {
+        total,
+        page,
+        pages,
+      },
+    };
   } catch (error) {
-    throw{status: error?.status || 500, message: error?.message || error}
+    throw { status: error?.status || 500, message: error?.message || error };
   }
-
 };
-
-
 
 module.exports = {
   getCities,

@@ -1,8 +1,8 @@
 const City = require("../database/City");
 
-const getCities = async (filterParams) => {
+const getCities = async (queryParams) => {
   try {
-    const data = await City.getCities(filterParams);
+    const data = await City.getCities(queryParams);
     return data;
   } catch (error) {
     throw error;

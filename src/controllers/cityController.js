@@ -2,9 +2,9 @@
 const cityService = require("../services/cityService");
 
 const getCities = async (req, res) => {
-  const { page, limit, city } = req.query;
+  const { page, limit, city, sort } = req.query;
   try {
-    const data = await cityService.getCities({ page, limit, city });
+    const data = await cityService.getCities({ page, limit, city, sort });
     res.send({
       status: "OK",
       data: data.cities,
