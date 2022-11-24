@@ -17,6 +17,23 @@ const getCities = async (req, res) => {
   }
 };
 
+const getCity = async (req, res) => {
+  const { _id } = req.params;
+  console.log(_id)
+  try {
+    const data = await cityService.getCity(_id);
+    res.send({
+      status: "OK",
+      data: data.city,
+    });
+  } catch (error) {
+    res
+      .status(error?.status || 500)
+      .send({ status: "FAILED", data: { error: error?.message || error } });
+  }
+};
+
 module.exports = {
-  getCities
+  getCities,
+  getCity
 };

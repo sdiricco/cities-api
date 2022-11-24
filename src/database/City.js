@@ -1,6 +1,6 @@
 // In src/database/Workout.js
 const IT = require("./IT.json");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const uri =
   "mongodb+srv://sdiricco:8vYaVvlDn2WjOl8K@cluster0.7ooa4te.mongodb.net/?retryWrites=true&w=majority";
@@ -63,6 +63,26 @@ const getCities = async (queryParams) => {
   }
 };
 
+const getCity = async (_id) => {
+
+  try {
+    const data = await client
+      .db(DB)
+      .collection(COLLECTION)
+      .find(ObjectId(_id))
+      .toArray();
+
+    const city = data && data.length ? data[0] : null;
+
+    return {
+      city 
+    };
+  } catch (error) {
+    throw { status: error?.status || 500, message: error?.message || error };
+  }
+}
+
 module.exports = {
   getCities,
+  getCity
 };
