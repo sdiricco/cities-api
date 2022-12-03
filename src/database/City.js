@@ -10,8 +10,6 @@ const COLLECTION = "IT";
 
 const client = new MongoClient(uri);
 
-let connected = false
-
 async function createDB() {
   for (let i = 0; i < IT.length; i++) {
     await client.db(DB).collection(COLLECTION).insertOne(IT[i]);
@@ -23,26 +21,11 @@ async function createDB() {
 }
 
 client.connect().then(async () => {
-  connected = true;
   console.log("DB connected.");
 });
 
-async function checkConnection(){
-  return new Promise((res, rej) => {
-    if (connected) {
-      res(true)
-    }
-    client.on("connectionReady", ()=> {
-      console.log('connectionReady')
-      res(true)
-    })
-  })
-} 
-
 const getCities = async (queryParams) => {
   try {
-
-    await checkConnection()
 
     const limit = queryParams.limit ? parseInt(queryParams.limit) : 10;
     const page = queryParams.page ? parseInt(queryParams.page) : 1;
@@ -83,8 +66,6 @@ const getCities = async (queryParams) => {
 
 const getCity = async (_id) => {
   try {
-
-    await checkConnection()
 
     const data = await client
       .db(DB)
